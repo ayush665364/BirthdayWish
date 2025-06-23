@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Happy Birthday Glow</title>
+  <style>
+    body {
+      margin: 0;
+      background: black;
+      font-family: 'Segoe UI', sans-serif;
+      overflow: hidden;
+    }
+
+    body.hide-cursor {
+      cursor: none;
+    }
+
+    .container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    .message {
+      position: absolute;
+      color: black;
+      font-size: 1rem;
+      white-space: nowrap;
+      transform: translate(-50%, -50%);
+      transition: color 2s ease, text-shadow 2s ease, opacity 2s ease;
+      z-index: 0;
+      opacity: 0;
+    }
+
+    .glow {
+      color: var(--color);
+      text-shadow: 0 0 10px var(--color), 0 0 30px var(--color);
+      font-weight: bold;
+      z-index: 1;
+      opacity: 1;
+    }
+
+    #central-hb {
+      font-size: 2.3rem;
+      font-weight: 700;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      color: black;
+      text-shadow: none;
+      z-index: 999;
+      opacity: 0;
+      transition: opacity 1s ease-in;
+      white-space: nowrap;
+      text-align: center;
+      max-width: 90vw;
+    }
+
+    .central-glow {
+      animation: centralGlow 5s infinite alternate;
+      opacity: 1 !important;
+      z-index: 999 !important;
+    }
+
+    @keyframes centralGlow {
+      0% { color: #ff4d6d; text-shadow: 0 0 10px #ff4d6d, 0 0 30px #ff4d6d; }
+      25% { color: #0ef; text-shadow: 0 0 10px #0ef, 0 0 30px #0ef; }
+      50% { color: #a78bfa; text-shadow: 0 0 10px #a78bfa, 0 0 30px #a78bfa; }
+      75% { color: #facc15; text-shadow: 0 0 10px #facc15, 0 0 30px #facc15; }
+      100% { color: #fb923c; text-shadow: 0 0 10px #fb923c, 0 0 30px #fb923c; }
+    }
+
+    .hover-zone {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100px;
+      height: 100px;
+      z-index: 998;
+    }
+
+    .hover-zone:hover ~ .mute-icon,
+    .mute-icon:hover {
+      opacity: 1;
+    }
+
+    .mute-icon {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      z-index: 1000;
+      font-size: 1.8rem;
+      color: white;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    @media (max-width: 600px) {
+      .message {
+        font-size: 0.7rem;
+      }
+
+      #central-hb {
+        font-size: 1.6rem;
+      }
+
+      .mute-icon {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="message-container">
+    <div id="central-hb">🎉 Happy Birthday!</div>
+    <div class="hover-zone"></div>
+    <div class="mute-icon" id="muteBtn">🎵</div>
+  </div>
+
+  <audio id="birthday-audio" loop>
+    <source src="MaiAgar.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
+  <script>
+    const container = document.getElementById("message-container");
+    const central = document.getElementById("central-hb");
+    const audio = document.getElementById("birthday-audio");
+    const muteBtn = document.getElementById("muteBtn");
+
+    const messages = [
+      "You're amazing!", "Stay happy!", "Keep smiling!", "Shine bright!",
+      "Wishing you joy!", "Spark joy", "Smile wider!", "Live fully!",
+      "Cheers to you!", "Stay blessed!", "You're the best!", "Keep glowing!",
+      "Keep sparkling", "Have fun today!", "Shine on", "You glow girl!",
+      "Dream big!", "Light the world!", "Be awesome!", "You're golden!",
+      "So cute!", "Sweet soul!", "Cutie pie!", "Glow up"
+    ];
+
+    const colors = [
+      "#ff4d6d", "#0ef", "#fb923c", "#a78bfa",
+      "#10b981", "#facc15", "#ec4899", "#60a5fa",
+      "#f472b6", "#22d3ee", "#ef4444", "#8b5cf6"
+    ];
+
+    const totalMessages = 200;
+    const messageElements = [];
+
+    function isFarFromCenter(x, y) {
+      const dx = x - 50;
+      const dy = y - 50;
+      return Math.sqrt(dx * dx + dy * dy) > 15;
+    }
+
+    for (let i = 0; i < totalMessages; i++) {
+      const msg = document.createElement("div");
+      msg.classList.add("message");
+
+      let x, y;
+      do {
+        x = 10 + Math.random() * 80;
+        y = 10 + Math.random() * 80;
+      } while (!isFarFromCenter(x, y));
+
+      msg.innerText = messages[Math.floor(Math.random() * messages.length)];
+      msg.style.left = `${x}%`;
+      msg.style.top = `${y}%`;
+
+      container.appendChild(msg);
+      messageElements.push(msg);
+    }
+
+    setTimeout(() => {
+      central.classList.add("central-glow");
+    }, 1000);
+
+    function glowRandomMessage() {
+      const available = messageElements.filter(el => !el.classList.contains('glow'));
+      if (available.length === 0) return;
+
+      const randomEl = available[Math.floor(Math.random() * available.length)];
+      const color = colors[Math.floor(Math.random() * colors.length)];
+
+      randomEl.style.setProperty('--color', color);
+      randomEl.classList.add('glow');
+      randomEl.style.zIndex = 1;
+      randomEl.style.opacity = 1;
+
+      setTimeout(() => {
+        randomEl.style.transition = 'opacity 2s ease';
+        randomEl.style.opacity = 0;
+
+        setTimeout(() => {
+          randomEl.classList.remove('glow');
+          randomEl.style.zIndex = 0;
+          randomEl.style.transition = 'color 2s ease, text-shadow 2s ease, opacity 2s ease';
+        }, 2000);
+      }, 10000);
+    }
+
+    setTimeout(() => {
+      setInterval(glowRandomMessage, 2000);
+    }, 2000);
+
+    document.addEventListener('click', () => {
+      audio.play().catch(() => {});
+    }, { once: true });
+
+    muteBtn.addEventListener('click', () => {
+      audio.muted = !audio.muted;
+      muteBtn.textContent = audio.muted ? '🔇' : '🎵';
+    });
+
+    // Cursor auto-hide logic
+    let cursorTimer;
+    const hideAfter = 3000;
+
+    function resetCursorTimer() {
+      document.body.classList.remove("hide-cursor");
+      clearTimeout(cursorTimer);
+      cursorTimer = setTimeout(() => {
+        document.body.classList.add("hide-cursor");
+      }, hideAfter);
+    }
+
+    document.addEventListener("mousemove", resetCursorTimer);
+    resetCursorTimer();
+  </script>
+</body>
+</html>
